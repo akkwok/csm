@@ -837,139 +837,138 @@
     })(jQuery);
   </script> -->
 
-
-<!-- API Config -->
-  <script>
-  window.AsusAPIConfig = {
-      appID : '',
-      system : 'asus',
-      websitePath: 'global', // local: replace with your own local path
-      websiteID : 1,
-      language : "en-us", // local: replace with your own language code
-      eliteToken : '',
-      simplifyHeader : false,
-      simplifyFooter : false,
-      showECFooter : false,
-      isHasCookieBanner : true,
-      cookieBannerHold : false,
-      cookieBannerElement: document.body,
-      reminderElement: document.body,
-      reminder : async function(reminderWebsiteCode) {
-          const data = {
-            reminderURL: reminderWebsiteCode ? `https://www.asus.com/microsite/Graphics-Cards/GeForce-RTX-50-Series/${reminderWebsiteCode}` : "",
-          }
-          return data;
-      },
-      theme: "asus",
-      campaignId: "",
-      zIndex: 11900,
-      development : false,
-      pageKey : "OPBGPO002",
-      corsID: "tgc195ba439d42EE9e1b7558cf1b6b59",
-  };
-  </script>
-  <!-- Header/Footer API -->
-  <script src="https://dlcdnimgs.asus.com/vendor/public/js/asus_config.min.js"></script>
-  <!-- CookieBanner API -->
-  <script src="https://dlcdnimgs.asus.com/vendor/cookie-banner/js/alert-info.js"></script>
-  <!-- Reminder API -->
-  <script src="https://dlcdnimgs.asus.com/vendor/location-reminder/js/locationreminder.min.js"></script>
-  <!-- PromotionBanner API -->
-  <script src="https://dlcdnimgs.asus.com/vendor/promotion-banner/js/promotionbanner.min.js"></script>
-  <!-- SubscribeForm API -->
-  <script src="https://dlcdnimgs.asus.com/vendor/subscribe-form/js/subscribeform.min.js"></script>
-
+    <!-- API Config -->
     <script>
-    $(function() {
-        // --- 1. 定義 API URL ---
-        // 這裡我們修改了 API 參數來抓取 CSM 主機板系列
-        const WEBSITE_CODE = "global";
-        const apiUrl = `https://odinapi.asus.com/recent-data/apiv2/SeriesFilterResult?SystemCode=asus&WebsiteCode=${WEBSITE_CODE}&ProductLevel1Code=motherboards-components&ProductLevel2Code=motherboards&PageSize=150&PageIndex=1&SeriesName=CSM&Sort=Recommend&siteID=www&sitelang=`;
-
-        // --- 2. 獲取並處理產品資料的函式 ---
-        async function initializeProductCarousel() {
-            const productContainer = $('#csm-product-container');
-            if (!productContainer.length) {
-                console.error('Product container #csm-product-container not found.');
-                return;
-            }
-
-            try {
-                // --- 發送 Fetch 請求 ---
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        window.AsusAPIConfig = {
+            appID: '',
+            system: 'asus',
+            websitePath: 'global', // local: replace with your own local path
+            websiteID: 1,
+            language: "en-us", // local: replace with your own language code
+            eliteToken: '',
+            simplifyHeader: false,
+            simplifyFooter: false,
+            showECFooter: false,
+            isHasCookieBanner: true,
+            cookieBannerHold: false,
+            cookieBannerElement: document.body,
+            reminderElement: document.body,
+            reminder: async function(reminderWebsiteCode) {
+                const data = {
+                    reminderURL: reminderWebsiteCode ? `https://www.asus.com/microsite/Graphics-Cards/GeForce-RTX-50-Series/${reminderWebsiteCode}` : "",
                 }
-                const data = await response.json();
-                const productList = data.Result.ProductList;
+                return data;
+            },
+            theme: "asus",
+            campaignId: "",
+            zIndex: 11900,
+            development: false,
+            pageKey: "OPBGPO002",
+            corsID: "tgc195ba439d42EE9e1b7558cf1b6b59",
+        };
+    </script>
+    <!-- Header/Footer API -->
+    <script src="https://dlcdnimgs.asus.com/vendor/public/js/asus_config.min.js"></script>
+    <!-- CookieBanner API -->
+    <script src="https://dlcdnimgs.asus.com/vendor/cookie-banner/js/alert-info.js"></script>
+    <!-- Reminder API -->
+    <script src="https://dlcdnimgs.asus.com/vendor/location-reminder/js/locationreminder.min.js"></script>
+    <!-- PromotionBanner API -->
+    <script src="https://dlcdnimgs.asus.com/vendor/promotion-banner/js/promotionbanner.min.js"></script>
+    <!-- SubscribeForm API -->
+    <script src="https://dlcdnimgs.asus.com/vendor/subscribe-form/js/subscribeform.min.js"></script>
+    <script src="https://dlcdnimgs.asus.com/vendor/subscribe-form/js/subscribeform.min.js"></script>
+    <script>
+        $(function() {
+            // --- 1. 定義 API URL ---
+            // 這裡我們修改了 API 參數來抓取 CSM 主機板系列
+            const WEBSITE_CODE = "global";
+            const apiUrl = `https://odinapi.asus.com/recent-data/apiv2/SeriesFilterResult?SystemCode=asus&WebsiteCode=${WEBSITE_CODE}&ProductLevel1Code=motherboards-components&ProductLevel2Code=motherboards&PageSize=150&PageIndex=1&SeriesName=CSM&Sort=Recommend&siteID=www&sitelang=`;
 
-                if (!productList || productList.length === 0) {
-                    console.warn("API returned no products.");
-                    productContainer.parent().hide(); // 如果沒有產品，就隱藏區塊
+            // --- 2. 獲取並處理產品資料的函式 ---
+            async function initializeProductCarousel() {
+                const productContainer = $('#csm-product-container');
+                if (!productContainer.length) {
+                    console.error('Product container #csm-product-container not found.');
                     return;
                 }
-                
-                // --- 3. 遍歷資料並生成 HTML ---
-                let allCardsHTML = '';
-                productList.forEach(product => {
-                    let newTagHTML = "Y" === product.LeftHeader.NewsFlag ? `<div class="hd-tag">${product.LeftHeader.NewsFlagWording}</div>` : "";
-                    let productName = product.Name.replace(/<\/?h2>/g, ""); // 去除 h2 標籤
 
-                    // 組合單張產品卡片的 HTML
-                    allCardsHTML += `
-                        <div class="pd-card" data-product-id="${product.ProductID}">
-                            ${newTagHTML}
-                            <div class="img-container">
-                                <a href="${product.ProductURL}" target="_blank" rel="noreferrer noopener">
-                                    <picture>
-                                        <source type="image/webp" srcset="${product.ImageList[0].ImageURL[0]}/fwebp">
-                                        <img src="${product.ImageList[0].ImageURL[0]}" alt="${productName}">
-                                    </picture>
-                                </a>
-                            </div>
-                            <div class="logo-container flex-nowrap align-items-center justify-content-center">
-                                ${product.ProductLogo.map(logo => 
-                                    logo.LogoLink 
-                                    ? `<a href="${logo.LogoLink}" target="_blank" rel="noopener noreferrer"><img src="${logo.LogoImageURL.logo1x}" srcset="${logo.LogoImageURL.logo1x} 1x, ${logo.LogoImageURL.logo2x} 2x" alt="${logo.LogoAlt}"></a>`
-                                    : `<img src="${logo.LogoImageURL.logo1x}" srcset="${logo.LogoImageURL.logo1x} 1x, ${logo.LogoImageURL.logo2x} 2x" alt="${logo.LogoAlt}">`
-                                ).join('')}
-                            </div>
-                            <div class="hd-txt">
-                                <a href="${product.ProductURL}" target="_blank" rel="noreferrer noopener">
-                                    <h4>${productName}</h4>
-                                </a>
-                                <p>${product.ModelSpec}</p>
-                            </div>
-                            <a href="${product.ProductURL}" target="_blank" rel="noopener noreferrer" aria-label="Learn more about ${productName}" class="hd-btn">${product.LearnMore}</a>
-                        </div>`;
-                });
-
-                // --- 4. 將所有 HTML 一次性插入容器 ---
-                productContainer.html(allCardsHTML);
-                
-                // --- 5. 初始化 Owl Carousel ---
-                productContainer.owlCarousel({
-                    margin: 20,
-                    loop: false,
-                    nav: true,
-                    dots: true,
-                    navText: ['<span class="sr-only">Previous</span>', '<span class="sr-only">Next</span>'],
-                    responsive: {
-                        0: { items: 1 },
-                        600: { items: 2 },
-                        1024: { items: 3 }
+                try {
+                    // --- 發送 Fetch 請求 ---
+                    const response = await fetch(apiUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                });
+                    const data = await response.json();
+                    const productList = data.Result.ProductList;
 
-            } catch (error) {
-                console.error("Failed to fetch or process product data:", error);
-                productContainer.parent().hide(); // 發生錯誤時也隱藏區塊
+                    if (!productList || productList.length === 0) {
+                        console.warn("API returned no products.");
+                        productContainer.parent().hide(); // 如果沒有產品，就隱藏區塊
+                        return;
+                    }
+
+                    // --- 3. 遍歷資料並生成 HTML ---
+                    let allCardsHTML = '';
+                    productList.forEach(product => {
+                        let newTagHTML = "Y" === product.LeftHeader.NewsFlag ? `<div class="hd-tag">${product.LeftHeader.NewsFlagWording}</div>` : "";
+                        let productName = product.Name.replace(/<\/?h2>/g, ""); // 去除 h2 標籤
+
+                        // 組合單張產品卡片的 HTML
+                        allCardsHTML += `
+        <div class="pd-card" data-product-id="${product.ProductID}">
+        ${newTagHTML}
+        <div class="img-container">
+        <a href="${product.ProductURL}" target="_blank" rel="noreferrer noopener">
+        <picture>
+        <source type="image/webp" srcset="${product.ImageList[0].ImageURL[0]}/fwebp">
+        <img src="${product.ImageList[0].ImageURL[0]}" alt="${productName}">
+        </picture>
+        </a>
+        </div>
+        <div class="logo-container flex-nowrap align-items-center justify-content-center">
+        ${product.ProductLogo.map(logo => 
+        logo.LogoLink 
+        ? `<a href="${logo.LogoLink}" target="_blank" rel="noopener noreferrer"><img src="${logo.LogoImageURL.logo1x}" srcset="${logo.LogoImageURL.logo1x} 1x, ${logo.LogoImageURL.logo2x} 2x" alt="${logo.LogoAlt}"></a>`
+        : `<img src="${logo.LogoImageURL.logo1x}" srcset="${logo.LogoImageURL.logo1x} 1x, ${logo.LogoImageURL.logo2x} 2x" alt="${logo.LogoAlt}">`
+        ).join('')}
+        </div>
+        <div class="hd-txt">
+        <a href="${product.ProductURL}" target="_blank" rel="noreferrer noopener">
+        <h4>${productName}</h4>
+        </a>
+        <p>${product.ModelSpec}</p>
+        </div>
+        <a href="${product.ProductURL}" target="_blank" rel="noopener noreferrer" aria-label="Learn more about ${productName}" class="hd-btn">${product.LearnMore}</a>
+        </div>`;
+                    });
+
+                    // --- 4. 將所有 HTML 一次性插入容器 ---
+                    productContainer.html(allCardsHTML);
+
+                    // --- 5. 初始化 Owl Carousel ---
+                    productContainer.owlCarousel({
+                        margin: 20,
+                        loop: false,
+                        nav: true,
+                        dots: true,
+                        navText: ['<span class="sr-only">Previous</span>', '<span class="sr-only">Next</span>'],
+                        responsive: {
+                            0: { items: 1 },
+                            600: { items: 2 },
+                            1024: { items: 3 }
+                        }
+                    });
+
+                } catch (error) {
+                    console.error("Failed to fetch or process product data:", error);
+                    productContainer.parent().hide(); // 發生錯誤時也隱藏區塊
+                }
             }
-        }
 
-        // --- 執行函式 ---
-        initializeProductCarousel();
-    });
+            // --- 執行函式 ---
+            initializeProductCarousel();
+        });
     </script>
 
 </body>
