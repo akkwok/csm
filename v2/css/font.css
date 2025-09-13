@@ -1,0 +1,15 @@
+/* @font-face {
+    font-family: 'ROGFonts';
+    src: url("../font/ROGFonts-Regular.otf") format("embedded-opentype"), url("../font/ROGFonts-Regular.ttf") format("opentype"), url("../font/ROGFonts-Regular.woff"), url("../font/ROGFonts-Regular.woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap
+} */
+
+@font-face {
+    font-family: 'TradeGothicLTPro';
+    src: url("../font/TradeGothicLTPro-Bold.ttf") format("opentype");
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap
+}
